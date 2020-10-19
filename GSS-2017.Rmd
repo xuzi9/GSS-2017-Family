@@ -1,25 +1,280 @@
 ---
-title: "GSS-2017"
-author: "Yitian Zhao, Zikun (Alex) Xu"
-date: "10/14/2020"
+title: "General Social Trends Within a Canadian Family from the 2017 GSS Survey"
+author: "Allison Li, Bianca Pokhrel, Yitian Zhao, Zikun (Alex) Xu"
+date: "10/19/2020"
 output: pdf_document
 ---
-# Authors: Yitian Zhao, Zikun (Alex) Xu
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("tidyverse")
+#install.packages("brms")
+#install.packages("dplyr")
+#install.packages("here")
+library(tidyverse)
+library(brms)
+library(broom)
+library(here)
+```
+
+# Authors: 
+Written by: Allison Li, Bianca Pokhrel, Yitian Zhao, Zikun (Alex) Xu
 
 # Abstract
+  The General Social Survey is designed to gather data on and analyze social trends in Canada to serve as an important insight on social policy issues. We are using the 2017 Canadian General Social Survey to explore the the different social factors affecting the number of children Canadians are having. We have decided on looking into variables such as age, population centers, marital status, and education level to analyze the sort of living conditions Canadians hold themselves to in terms of starting a family. The conclusions made in this report show a glimpse of the living standards in Canada in 2017 and what sort of areas need further support when considering social programs.
+  
 
 # Introduction
 
-# Data
+  For For our analysis, we are using the 2017 Canadian General Social Survey which contains data for various social topics such as family life, social identity, caregiving, and volunteering. It is purposed for analyzing social trends within Canadians to observe changes in living conditions over time and possibly introduce or adjust social policies. Its data collection methodology mainly consists of Random Digit Dialing collecting cross-sectional data from Canadians over the age of 15 throughout 10 provinces. This sort of interview typically lasts 40 min is collected through a 6-12 month period.
+  
+  Given the wide array of data available from the GSS, we have decided to focus specifically on factors forming the average Canadian family. There are several variables we have looked into which possibly form a relationship with the number of children Canadians are having such as age, population center, marital status, and education level. With age and population centers, we see there is a general trend of older Canadians living rural areas typically having more children. We figure this id attributed to the fact that the younger generation of Canadians living in dense urban areas generally have different values with starting a family since they grew up with more social reform changes for womens' rights and may be more career-oriented in a dense population center. This ties in with educational factors as we have seen that education above a bachelor's degree/diploma does not seem to have a large effect either as individuals with higher level education may be likely to pursue research or a career over starting a family. Marital status also is not shown to have a large impact on predicting the number of children although an interesting observation of the regression intercept suggests that on average a married couple will have 2 children.
+  
+  This study will analyze the relationships of various factors with the number of children an individual has. While we provide some surface level insight into how families are affect through our chosen variables, there is room for further analysis in each area. For example, a better study of age demographics could be analyzed through the birth rates in Canada throughout the years instead of being limited to GSS 2017. Interesting factors such as the increase in womens' education which is suggested to play a role in declining birth rates could be measured through womens' university graduation rates compared to birth rates in Canada. Couple dynamics especially with gender wage differences and parental leave definitely contribute to a couple's decision to start a family and we can analyze this by looking at data from Canadian social programs and pay differences at large companies.
+  
+# Data 
 
-# Model
+Reference where we used Rohan's GSS cleaning data!
 
-# Results
+```{r Data Import}
+gss <- read.csv("gss.csv")
+gss
+```
+
+	A general strength of the survey is that the data resulting from the questionnaire is detailed and covers many areas of interest. Furthermore, since the GSS is government run they have access to reliable information/sources for Canadians and their phone numbers for their frame. However, a noticeable weakness was that the survey used a stratified design where they reported in the documentation that between strata, there were significant differences in sampling fractions. Meaning that some areas could have been over-represented or under-represented making their "unweighed" sample an inaccurate representative of the population.
+
+	The questionnaire starts off with basic questions to obtain more information about the demographic. A large benefit was that these questions had little non-response answers due to their survey methodology. Moreover, the questionnaire contained many areas of interest, which were helpful for research. Moreover, a con that was unavoidable is that many questions were open ended, and as a result a lot of work had to be done to sort and can the data retrieved.
+
+	The GSS conducts phone surveys in the Canadian provinces, and their population are people 15+ years old in Canada, excluding residents of the territories. Each of the 10 provinces were divided into strata based on geographic areas. Many of the Census Metropolitan Areas were considered their own strata. Overall, there were a total of 27 strata.
+
+	The frame of the survey consists of the list of phone numbers in use that are available to Statistics Canada and the Address Register, which is a list of dwellings. Each record in the survey frame was assigned to a stratum in its province, and records were chosen using simple random sampling without replacement within each stratum. When minimum sample sizes targets were met in a province, they allocated the remaining samples to remaining strata to maintain balance. An eligible respondent was selected to participate from the household represented by the chosen record. Selected household were terminated if they did not meet the eligible criteria. Their final sample consisted of 20602 respondents. 
+
+	In addition, their survey methodology did not permit for non-responses on questions that were required for weighting. Thus values were imputed based on existing data when a respondent was not comfortable providing details. According to their reported non-response rates, they had very few in person non-response rates. However, they reported that a non-response rate of 37.4% at the household level. To handle their non-responses, they had to do a three-stage non-response adjustment where they used auxiliary	data from Statistics Canada. Non-response rates contributed to the weighting assigned to each respondent since non-response rates varied by demographic groups, making the unweighted sample less representative.
+
+
+## Models/Discussion
+
+#Comparing age distributions for Canadians with different total numbers of children
+  Through the Canadian General Social Survey, we can see there is a trend within the age demographics when comparing Canadians by the total number of children they have. Canadians with no children have slightly right skewed distribution which is to be expected as young adults typically don't have the financial stability and mindset to be starting a family. 
+  
+  As we observe the graphs for age distributions of Canadians with more children, we see there is a trend of the graphs to be increasingly more left-skewed, especially with a large number of Canadians 80 and above with 3 or more children. This sort of trend is most likely attributed to generational differences in family values and lifestyle as modernization typically entails lower fertility. 
+  
+  According to Statistics Canada, there is a strong link between fertility rates and social and legislative changes in the mid-1900s where the high marriage rates and stable economy post WWII led to Canada's baby boom peaking at a fertility rate of 3.94 children per woman. This helps explain the stand out numbers in older Canadians past 80 years of age with a high total number of children in our data. We see these numbers lower for younger age groups as less influence of religion, more accessible contraception, and more accessible education for women all became significant factors for the declining birth rate beginning in the 1970s. The effects of such factors is visible in the 2017 GSS data and provides a glimpse of how different age demographics are shaped today.
+```{r, echo = FALSE}
+# Comparing the age distributions for Canadians with different total numbers of children
+nochildren <- filter(gss, total_children == 0)
+onechild <- filter(gss, total_children == 1)
+twochildren <- filter(gss, total_children == 2)
+threechildren <- filter(gss, total_children == 3)
+fourchildren <- filter(gss, total_children == 4)
+fivechildren <- filter(gss, total_children == 5)
+sixchildren <- filter(gss, total_children == 6)
+sevenchildren <- filter(gss, total_children == 7)
+ggplot(nochildren, aes(age)) + geom_histogram() + labs(title = "Fig 1. Age Distribution of Canadians with No Children")
+ggplot(onechild, aes(age)) + geom_histogram() + labs(title = "Fig 2. Age Distribution of Canadians with 1 Child")
+ggplot(twochildren, aes(age)) + geom_histogram() + labs(title = "Fig 3. Age Distribution of Canadians with 2 Children")
+ggplot(threechildren, aes(age)) + geom_histogram() + labs(title = "Fig 4. Age Distribution of Canadians with 3 Children")
+ggplot(fourchildren, aes(age)) + geom_histogram() + labs(title = "Fig 5. Age Distribution of Canadians with 4 Children")
+ggplot(fivechildren, aes(age)) + geom_histogram() + labs(title = "Fig 6. Age Distribution of Canadians with 5 Children")
+ggplot(sixchildren, aes(age)) + geom_histogram() + labs(title = "Fig 7. Age Distribution of Canadians with 6 Children")
+ggplot(sevenchildren, aes(age)) + geom_histogram() + labs(title = "Fig 8. Age Distribution of Canadians with 7 Children")
+```
+
+
+# Comparing number of children with rural vs urban areas in the city
+
+  In this model, we look at the correlation between number of children and different regions in a city, specifically rural and urban areas. We run a linear regression model on these two variables to see if the number of children differs between rural and urban areas in a city. The function that I used for this regression is lm() and I ran two different regression models to depict a difference between how many children adults have whom are living in urban areas vs rural areas. 
+  
+  As we can see from model 1, the p-values for the coefficients are very small therefore meaning that we can reject the null-hypothesis and that the predictor is very significant and is likely a meaningful addition to our model. Also, given that the p-value for the dummy variable "Rural areas and small population centers" is very significant, this suggests that there is a statistical evidence of a difference in number of children between rural and urban areas. The linear regression model would be y = b0 + b1*x where y is the number of children, b0 being the intercept, b1 being the slope estimate, and x being the categorical variable 'areas'. Since we modeled the categorical variables by factors with two levels, 1 and 0, the x value for both model 1 and model 2 would be 1. Therefore we can interpret from the coefficients in model 1 that the number of children would be about 2.082 = 1.57627 + 0.50590 or (y = b0 + b1), if the respondent lived in a rural community with small populations; and on average 1.57627 or (b0) for the number of children for respondents living in urban areas with larger populations. 
+  
+  Compared to the coefficients in model 2, we can see that the "Larger urban population centers" coefficient is negative meaning that this regression model has a negative slope, compared to model 1, in general we can interpret that as living in urban areas with larger populations is associated with a decrease in the number of children that people decide to have compared to model 1. The results in model 2 would be on average, respondents would have 1.57627 children = 2.082 - 0.50590 (b0 + b1) for those living in urban areas and 2.082 children for those living in rural areas. The results in both models are the same but the difference in slopes concludes that there is generally a decrease in the number of children people tend to have if they were to live in an urban area compared to those whom lives in rural areas. 
+
+```{r, population center vs number of children}
+#Filter out the 'Prince Edward Island' responses in the pop_center since it is not significant and we are only trying to run a regression of number of children on urban areas vs rural areas.
+filtered_gss <- filter(gss, pop_center == c("Larger urban population centres (CMA/CA)", "Rural areas and small population centres (non CMA/CA)"))
+
+#Changed the categorical variable from characters to factors
+gss$pop_center = as.factor(gss$pop_center)
+
+print("Model 1")
+#Run a linear regression on total number of children and regions of the rural area
+model1 <- lm(total_children ~ pop_center, data = filtered_gss)
+summary(model1)
+
+print('------------------------------------------------------------------------------------------------------')
+filtered_gss2 <- filtered_gss %>%
+  mutate(pop_center = relevel(pop_center, ref = "Rural areas and small population centres (non CMA/CA)"))
+
+print("Model 2")
+model2 <- lm(total_children ~ pop_center, data = filtered_gss2)
+summary(model2)
+
+```
+
+
+# Predict the total number of children by marital status
+  The goal of the model is to predict the total number of children by marital status where marital status is a categorical value. Since marital status is categorical, the variables used when developing the model would be each possible value of marital status with binary values.
+  
+  The model would be generated using glm to estimate the regression coefficients in rstudio. Model convergence checks can be made by looking at the outputted p-values. 
+
+  From the model generated above, we can see that the intercept starts at around 2. This means that on average, for the observations used for the model, households had 2 children. Based on maritial status such as single, some estimates of the coefficients were negative.
+
+  From the p-values that were generated from the model, we can see that a majority of them are small but not significant (at p=0.5), meaning that it is likely that they do not have a large impact on the number of children. The only exception seen was the marital status of 'married,' which had a value of 0.08076845. If we use an alpha value of 0.05, as our significance threshold, we would not have sufficient evidence to reject the hypothesis that being married has a significant impact on having children.
+
+  This result doesn't come as a shock to most. However, it is interesting to take this result and look further into the relationship between marital status and children- specifically, living with a common-law partner. Looking at our model, we know that having a common-law partner does not necessarily have a large impact on the number of children that people have. However, if we investigate further, we see that children that come from common-law unions, are disproportionately affected by divorced parents. As a study by the Canadian Department of Justice, children born to common-law unions were clearly over-represented among children who experienced the break-up of their families (CITE).
+
+  Divorce rates in Canada have been increasing since the 1980s however this is also due to the decrease in marriages that have been happening in Canada recently. In Canada almost half (47 percent) of the children from broken marriages had not seen their parents divorce after three years of separation and this percentage was still 28 percent after five years of separation (CITE). Thus, when we look at the results of this study, it is important to open the door to further investigations so we as a society can ask more probing questions.
+
+```{r, echo=FALSE}
+relevant_poll_data <- gss %>% select(total_children, marital_status)
+relevant_poll_data %>%
+  group_by(marital_status) %>% summarise(count=n()/nrow(relevant_poll_data)) 
+
+# Sim census data from stats on gov site
+num_pop2017 <- 36708083
+sim_census <- tibble(
+  marital_status = c('Widowed', 'Divorced',  'Separated', 'Married', 'Living common-law', 'Single, never married'),
+  num = c(0.061 * num_pop2017, 0.062 * num_pop2017, 0.027 * num_pop2017, 0.462 * num_pop2017, 0.109 * num_pop2017, 0.28 * num_pop2017),
+  prop = c(0.061, 0.062, 0.027, 0.462, 0.109, 0.28)
+)
+
+# Multiple linear regression for model
+model <- glm(total_children ~ marital_status,
+            data = relevant_poll_data )
+
+broom::tidy(model)
+
+# predict
+sim_census$estimate <- model %>% predict(newdata = sim_census)
+
+estimates_barplot <- sim_census%>% na.omit()  %>%
+  ggplot(aes(x = marital_status, y = estimate)) + geom_bar(stat="identity")+
+  labs(title= "Figure 9. Number of Children for Different Marital Status")
+
+estimates_barplot
+
+# What he did in notes for post stratified estimation
+summary_sim <- sim_census %>%
+  mutate(children_predict_prop = estimate*prop) %>% group_by(marital_status) %>%
+  summarise(children_predict = sum(children_predict_prop))
+
+estimates_barplot_post_strat <- summary_sim%>% 
+  ggplot(aes(x = marital_status, y = children_predict)) + geom_bar(stat="identity")+
+  labs(title= "Figure 10. Predicted Number of Children for Different Marital Status")
+
+estimates_barplot_post_strat
+
+```
+
+# Education levels vs total number of children
+
+  When developing a model for investigating the relationship between education levels and the total number of children, we notice that the response for education levels is categorical. Thus, to use a model to model the relationship between these two variables, it is necessary to convert education levels to integer factors to develop a count that we can then graph.
+  
+  From this model, we can see that the number of total children per person seems to have a linear shape indicating that a linear regression can fit as a potential model. Looking at the at the p-values of the predictor model created, we notice that it is very small for a university certificate, diploma above a bachelor's degree but not significant at 0.27 (alpha = 0.05). This indicates that more education above a bachelor's degree does not play a significant role in how many children someone has. Additionally, a bachelor's degree or relevant certificate seems to have the smallest p-value and thus seems to be the most significant factor in the number of children had by a person.
+
+  Looking at these results, we can use our common knowledge to confirm that this makes sense. Generally speaking, most jobs that require higher education, pay a sustainable wage that allows families to have children and care for them as well. Looking into this further, we can start to see trends between the results in this study and relate them to issues in other areas of our society such as income, and parental leave. One area that isn't discussed in this analysis due to insufficient data is where women and men fall in this. It is perhaps for a future study to dissect this however, a StatCan article states that "one cost is the so-called 'family gap,' also referred to as the 'child penalty' or 'motherhood earnings gap.' It measures how much the earnings of women with children fall below those of women without children, other factors being equal.CITE"
+  
+
+```{r, education level vs number of children, echo = FALSE}
+
+# need to change the education levels to factors as education is a categorical variable
+education_gss <- gss %>% select(total_children, education)
+
+gss$education = as.factor(gss$education)
+str(gss$education)
+
+education_gss %>%
+  group_by(education) %>% summarise(count=n())
+
+ggplot(education_gss,aes(x=education)) +
+  geom_bar(fill="lightblue") +
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1)) +
+  labs(title = "Figure 11. Education Level of Respondents")
+  
+
+
+# Run a linear regression on total number of children and the education level to see
+# the relationship between the total number of children is correlated with the
+# education level of the parents. We will look at linear regression first to see
+# if the model is appropriate
+
+model_education <- lm(total_children ~ education, data = gss)
+broom::tidy(model_education, echo = FALSE)
+
+summary(model_education)
+```
+
+# Income vs number of children
+  As we interpret this model comparing total number of children to income, our results show that the p-values of all the models are not significant thus not rejecting the null-hypothesis therefore meaning that the incomes of respondents, no matter how much he/she makes, does not affect the total number of children that the respondent has. In this regression, the intercept would be on average how many children the respondent strictly based on the income factor of our responses, which is 1.69. Justified by the model regressing income of the respondent over the total number of children, we can conclude that how much money an individual makes does not help predict how many children he/she will have. 
+```{r, echo=FALSE}
+#Make income a factor since it is a categorical variable in order to run regression
+gss$income_respondent = as.factor(gss$income_respondent)
+
+#Filter out the two columns that were used in regression
+income_gss <- gss %>% select(total_children, income_respondent)
+
+#Group 
+income_gss %>%
+  group_by(income_respondent) %>% summarise(count=n())
+
+ggplot(income_gss, aes(x = income_respondent))+
+  geom_bar()+
+  theme(axis.text.x= element_text(angle = 60, vjust = 1, hjust = 1))+
+  labs(title = "Figure 12. Income of Respondents")
+
+model_income <- lm(total_children ~ income_respondent, data = income_gss)
+summary(model_income) 
+
+```
+# Overall model with all factors 
+
+
+```{r}
+model_total <- lm(total_children ~ pop_center + education + marital_status + income_respondent, data = gss)
+summary(model_total)
+
+```
 # Discussion 
 
+# Results
+
+# Weaknesses
+
+# Appendix
+Code and data supporting this analysis is available at:
+
 # References
-- Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
-  Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
+- Bohnert, N. A. Milan and H. Lathe. 2014. Enduring diversity: Living arrangements of children in Canada over 100 years of the
+  census. Demographic documents, Statistics Canada. Catalogue no. 91-0015 — No. 11.
+  
+- Canadian Demographics at a Glance. 2014. Statistics Canada. Catalogue no. 91-003-X.
+
+- Chambers, J. M. (1992) Linear models. Chapter 4 of Statistical Models in S eds J. M. Chambers and T. J. Hastie, Wadsworth & 
+  Brooks/Cole.
+  
+- Gee, E.M. 1987. “Historical Change in the Family Life Course of Canadian Men and Women”, Aging in Canada: Social Perspectives,     editor V.W. Marshall, Fitzhenry and Whiteside, Table 4.
+
+- Milan, A. 2000. “One hundred years of families“, Canadian Social Trends, Statistics Canada. Catalogue no. 11-008.
+
+- Milan, A. 2013. “Fertility: Overview, 2011”, Report on the Demographic Situation in Canada, Statistics Canada. Catalogue no.      91-209-X.
+
+- Milan, A. 2013. “Marital status: Overview, 2011”, Report on the Demographic Situation in Canada, Statistics Canada. Catalogue 
+  no.   91-209-X.
+
+- Milan, A. and L. Martel. 2008. “Fertility and induced abortions, 2011”, Part I of Report on the Demographic Situation in Canada,   Statistics Canada. Catalogue no. 91-209-X.
+
 - R Core Team (2020). R: A language and environment for statistical
   computing. R Foundation for Statistical Computing, Vienna, Austria.
   URL https://www.R-project.org/.
+- Romaniuc, A. 1984. Fertility in Canada: From Baby-boom to Baby-bust. Statistics Canada. Catalogue no. 91-524.
+
+- Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
+  Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
+
+- Wilkinson, G. N. and Rogers, C. E. (1973). Symbolic descriptions of factorial models for analysis of variance. Applied      
+  Statistics, 22, 392–399. doi: 10.2307/2346786.
+
+
+  
+  
+  
