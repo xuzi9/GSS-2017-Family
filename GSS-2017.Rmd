@@ -16,9 +16,6 @@ library(broom)
 library(here)
 ```
 
-# Authors
-Written by: Allison Li, Bianca Pokhrel, Yitian Zhao, Zikun (Alex) Xu
-
 # Abstract
 The General Social Survey is designed to gather data on and analyze social trends in Canada to serve as an important insight on social policy issues. We are using the 2017 Canadian General Social Survey to explore the the different social factors affecting the number of children Canadians are having. In order to analyze the various factors that affect starting a family, we have decided on looking into variables such as age, population centers, marital status, and education level to analyze the sort of living conditions Canadians hold themselves to. The conclusions made in this report show a glimpse of the living standards in Canada in 2017 and what areas need further support when considering social programs. 
 
@@ -70,23 +67,23 @@ ggplot(used_data, aes(x=age))+
 #Marital status
 ggplot(used_data, aes(x=marital_status))+
   geom_bar()+
-  labs(title="Fig 2. Marital Status of Respondent")
+  labs(title="Fig 2. Marital Status of Respondent", x= "Marital Status")
 
 #Education
 ggplot(used_data, aes(x=education))+
   geom_bar()+
   theme(axis.text.x = element_text(margin = unit(c(-30, 10, 0, 0), "pt"), angle = 30, vjust = 0.7, hjust=1))+
-  labs(title="Fig 3. Education Level of Respondent")
+  labs(title="Fig 3. Education Level of Respondent", x="Education Level")
 
 #Pop_center
 ggplot(used_data, aes(x=pop_center))+
   geom_bar()+
-  labs(title="Fig 4. Area of Living of Respondent")
+  labs(title="Fig 4. Area of Living of Respondent", x="Area")
 
 #Income respondent
 ggplot(used_data, aes(x=income_respondent))+
   geom_bar()+
-  labs(title="Fig 5. Income of Respondent")
+  labs(title="Fig 5. Income of Respondent", x= "Income")
 
 ```
 
@@ -96,9 +93,9 @@ From the figure 1-5, you can see and get a better understanding of the distribut
 
 \newpage
 # Models/Graphs
+## Age distributions corresponding with number of children he/she has
 When deciding on the overall model for our data, we decided to approach it a single variable at a time. We fitted each of our predictor variables to a linear model and then looked at their relationships. Thus, if all of the predictor variables can be fitted to a linear model, then the overall model is linear as well. This is similar to step-wise regression, however we looked specifically at the p-values of each model rather than the total error. This allowed us to see which categories of each predictor variable had the most effect on the overall regression.
 
-## Age distributions corresponding with number of children he/she has
 ```{r, echo = FALSE, warning=FALSE, message= FALSE}
 # Comparing the age distributions for Canadians with different total numbers of children
 nochildren <- filter(gss, total_children == 0)
