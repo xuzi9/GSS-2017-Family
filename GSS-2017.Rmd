@@ -268,7 +268,7 @@ Since the survey was conducted over the phone, the survey itself, which is quite
 In addition, the GSS used a stratified sampling approach in which they separated geographical area in the 10 provinces into 27 strata. Although they divided the areas using judgment on areas that were more populated or rural, the area covered by these strata is still quite wide. Meaning that a small town could still have the chance of being under-represented in comparison to a mid sized town. Moreover, certain demographics of people have preferences towards where they live, which could further influence the accuracy of the sample as a reflection of the population.
 
 # Appendix
-Code and data supporting this analysis is available at: https://github.com/xuzi9/GSS-2017-Family
+Code and data supporting this analysis is available at: https://github.com/xuzi9/GSS-2017-Family/blob/main/GSS-2017.Rmd
 \newpage
 
 # References
