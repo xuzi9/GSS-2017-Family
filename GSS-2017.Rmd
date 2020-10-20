@@ -119,8 +119,10 @@ ggplot(sevenchildren, aes(age)) + geom_histogram() + labs(title = "Fig 13. Age D
 ```
 
 ## Modelling the area of living vs the total number of children in the family
-## Model 1 and Model 2
+## Model 1 
 ```{r, population center vs number of children, echo =FALSE, warning=FALSE, message= FALSE}
+
+
 #Filter out the 'Prince Edward Island' responses in the pop_center since it is not significant and we are only trying to run a regression of number of children on urban areas vs rural areas.
 
 gss <- filter(gss, pop_center == c("Larger urban population centres (CMA/CA)", "Rural areas and small population centres (non CMA/CA)"))
@@ -128,23 +130,28 @@ gss <- filter(gss, pop_center == c("Larger urban population centres (CMA/CA)", "
 #Changed the categorical variable from characters to factors
 gss$pop_center = as.factor(gss$pop_center)
 
-print("Model 1")
+#print("Model 1")
 #Run a linear regression on total number of children and regions of the rural area
 model1 <- lm(total_children ~ pop_center, data = gss)
 #summary statistic of the linear model
-summary(model1)$coef
+knitr::kable(summary(model1)$coef)
 
-print('------------------------------------------------------------------------------------------------------')
+```
+
+## Model 2
+```{r}
 gss <- gss %>%
   mutate(pop_center = relevel(pop_center, ref = "Rural areas and small population centres (non CMA/CA)"))
 
 #Running a variant of model 1
-print("Model 2")
+
+#print("Model 2")
 model2 <- lm(total_children ~ pop_center, data = gss)
 #summary statistic of the linear model
-summary(model2)$coef
+knitr::kable(summary(model2)$coef)
 
 ```
+
 
 ## Predict the total number of children by marital status
 ## Model 3
@@ -157,7 +164,6 @@ model <- lm(total_children ~ marital_status,
             data = relevant_poll_data )
 
 broom::tidy(model)
-
 ```
 
 ## Education levels vs total number of children
@@ -202,8 +208,7 @@ ggplot(income_gss, aes(x = income_respondent))+
   labs(title = "Figure 15. Income of Respondents", x="Income of respondent", y = "Count")
 
 model_income <- lm(total_children ~ income_respondent, data = income_gss)
-print("model 5")
-summary(model_income)$coef
+knitr::kable(summary(model_income)$coef)
 
 ```
 
@@ -214,17 +219,18 @@ summary(model_income)$coef
   
   We chose these three main factors because, in discussion, we talked about the impact that living area, education, and marital status has on whether a family will choose to have multiple children or not. Living in a rural area or urban area affects the amount of space a family has in terms of raising a child and we concluded in discussion that people living in urban areas tend to have less children compared to people living in rural areas. Education is also a significant factor in this model because we concluded in discussion that respondents with higher education tend to have less children. We chose marital status to be included in this model as well to since we concluded in discussion that marital status does affect the number of children respondent's tend to have because for example respondents in a common-law relationship tend to have fewer children than respondents that are divorced. These factors are all categorical because given GSS survey, the answers only fit in different categories similar to how gender is divided into two categories. We chose to use total number of children as our independent variable since we want to analyze social characteristics that households in Canada have when it comes to raising children which is our main focus in this paper. 
   
-  According to the summary statistic of this overall model, the coefficients are all categorical variables, this model would regress the dependent variable as factors in this case Y = b0 + b1X1 + b2X2+ b3X3 where Y would be the number of children; b0 equals the intercept; b1, b2, and b3 would be coefficient estimates; and X1, X2, and X3 would be the dependent variable which in this case would equal to 1 since we regressed it as factors. To further analyze this general linear model, we interpret the summary statistics as for example if the respondent lives in a rural area, with a high school diploma, and is currently married, we can use the estimates of these coefficients to show many children he/she has; in this case it would be 1.7172+0.2862+0.1094 = 2.11 children on average.   
+  According to the summary statistic of this overall model, the coefficients are all categorical variables, this model would regress the dependent variable as factors in this case Y = b0 + b1X1 + b2X2+ b3X3 where Y would be the number of children; b0 equals the intercept; b1, b2, and b3 would be coefficient estimates; and X1, X2, and X3 would be the dependent variable which in this case would equal to 1 since we regressed it as factors. To further analyze this general linear model, we interpret the summary statistics as for example if the respondent lives in a rural area, with a high school diploma, and is currently married, we can use the estimates of these coefficients to show many children he/she has; in this case it would be 1.7172+0.2862+0.1094 = 2.11 children on average. 
+  
+  We chose to do a simple linear regression instead of other models such as logistic regression or bayesian because our dependent variable, total number of children, is quantitative and logistic regression is only used to model a binary dependent variable. On the other hand, we do not know the priors for our  variables therefore we would have used non-informative priors thus using bayesian linear regression would not be as helpful as if we had priors.
   
 ```{r, echo= FALSE, warning=FALSE, message= FALSE}
 #Filter the dataset to not include 'Prince Edward Island' since it is not significant in this variable
 gss <- filter(gss, pop_center == c("Larger urban population centres (CMA/CA)", "Rural areas and small population centres (non CMA/CA)"))
 
-print("Overall Generalized Linear Model")
 #Run a generalized linear regression on the various 
 model_total <- glm(total_children ~ pop_center + education + marital_status, data = gss)
 #Summary statistic of the overall model
-summary(model_total)$coef
+knitr::kable(summary(model_total)$coef)
 ```
 
 \newpage
