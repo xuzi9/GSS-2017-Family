@@ -72,7 +72,7 @@ ggplot(used_data, aes(x=marital_status))+
 #Education
 ggplot(used_data, aes(x=education))+
   geom_bar()+
-  theme(axis.text.x = element_text(margin = unit(c(-30, 10, 0, 0), "pt"), angle = 30, vjust = 0.7, hjust=1))+
+  theme(axis.text.x = element_text(margin = unit(c(-30, 10, 0, 0), "pt"), angle = 15, vjust = 0.7, hjust=1))+
   labs(title="Fig 3. Education Level of Respondent", x="Education Level")
 
 #Pop_center
@@ -83,6 +83,7 @@ ggplot(used_data, aes(x=pop_center))+
 #Income respondent
 ggplot(used_data, aes(x=income_respondent))+
   geom_bar()+
+  theme(axis.text.x = element_text(margin = unit(c(-30, 10, 0, 0), "pt"), angle = 15, vjust = 0.4, hjust=1))+
   labs(title="Fig 5. Income of Respondent", x= "Income")
 
 ```
@@ -91,11 +92,11 @@ ggplot(used_data, aes(x=income_respondent))+
 From the figure 1-5, you can see and get a better understanding of the distributions of age when concerning our predictors. Moreover, we can see that marital_status, education, and pop_center are qualitative variables while age is quantitative. We can also see that total_children only has values with whole numbers and lies between the range of (0, 7). An unique observation that we can observe is that there seems to be a large amout of respondents who are 80 years old, which can skew the answers.
 
 
-\newpage
 # Models/Graphs
-## Age distributions corresponding with number of children he/she has
+
 When deciding on the overall model for our data, we decided to approach it a single variable at a time. We fitted each of our predictor variables to a linear model and then looked at their relationships. Thus, if all of the predictor variables can be fitted to a linear model, then the overall model is linear as well. This is similar to step-wise regression, however we looked specifically at the p-values of each model rather than the total error. This allowed us to see which categories of each predictor variable had the most effect on the overall regression.
 
+## Age distributions corresponding with number of children he/she has
 ```{r, echo = FALSE, warning=FALSE, message= FALSE}
 # Comparing the age distributions for Canadians with different total numbers of children
 nochildren <- filter(gss, total_children == 0)
@@ -139,7 +140,7 @@ knitr::kable(summary(model1)$coef)
 ```
 
 ## Model 2
-```{r}
+```{r, echo=FALSE}
 gss <- gss %>%
   mutate(pop_center = relevel(pop_center, ref = "Rural areas and small population centres (non CMA/CA)"))
 
@@ -153,17 +154,25 @@ knitr::kable(summary(model2)$coef)
 ```
 
 
+
+
+
+
 ## Predict the total number of children by marital status
 ## Model 3
 ```{r, echo=FALSE}
+#Select out the two variables that we use in this model
 relevant_poll_data <- gss %>% select(total_children, marital_status)
+
+#Changing them into factors
 relevant_poll_data$marital_status <- as.factor(relevant_poll_data$marital_status)
 
 # Linear regression for model
-model <- lm(total_children ~ marital_status,
+model_maritalstatus <- lm(total_children ~ marital_status,
             data = relevant_poll_data )
+#Print a summary table
+knitr::kable(summary(model_maritalstatus)$coef)
 
-broom::tidy(model)
 ```
 
 ## Education levels vs total number of children
@@ -189,7 +198,7 @@ ggplot(education_gss,aes(x=education)) +
 # if the model is appropriate
 
 model_education <- lm(total_children ~ education, data = gss)
-broom::tidy(model_education, echo = FALSE)
+knitr::kable(summary(model_education)$coef)
 
 ```
 
