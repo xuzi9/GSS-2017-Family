@@ -1,1 +1,2 @@
-# GSS-2017-Family
+# GSS-2017 Project
+The General Social Survey is designed to gather data on and analyze social trends in Canada to serve as an important insight on social policy issues. We are using the 2017 Canadian General Social Survey to explore the the different social factors affecting the number of children Canadians are having. In order to analyze the various factors that affect starting a family, we have decided on looking into variables such as age, population centers, marital status, and education level to analyze the sort of living conditions Canadians hold themselves to. The conclusions made in this report show a glimpse of the living standards in Canada in 2017 and what areas need further support when considering social programs. 
